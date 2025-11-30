@@ -1,0 +1,4 @@
+# Requirements for Tranquil-Inbox-Ward
+# Generated from imports in app.py
+Flask>=2.0,<3.0
+gunicorn>=20.0.4
