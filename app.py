@@ -4,8 +4,6 @@ import urllib.request as urllib_request
 import urllib.error as urllib_error
 import os
 import logging
-import traceback
-import time
 import re
 from typing import Tuple, List, Dict, Any
 from collections import Counter

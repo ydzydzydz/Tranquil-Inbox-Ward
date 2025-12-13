@@ -64,8 +64,61 @@ pip freeze > requirements.txt
 ```
 - 确保 Ollama 服务已就绪并已拉取模型 `mollysama/rwkv-7-g1a:0.4b`。
 
+## Systemd 部署（生产环境推荐）
+
+### 1. 准备工作
+确保已安装：
+- Python 3.8+
+- Ollama（用于LLM推理）
+- 已拉取模型：`mollysama/rwkv-7-g1a:0.4b`
+
+### 2. 克隆仓库
+```bash
+git clone https://github.com/AXFOX/Tranquil-Inbox-Ward.git
+cd Tranquil-Inbox-Ward
+```
+
+### 3. 使用部署脚本
+```bash
+# 给脚本执行权限
+chmod +x deploy-systemd.sh
+
+# 运行部署脚本（需要sudo权限）
+sudo ./deploy-systemd.sh
+```
+
+### 4. 管理服务
+```bash
+# 查看服务状态
+sudo systemctl status tranquil-inbox-ward
+
+# 启动服务
+sudo systemctl start tranquil-inbox-ward
+
+# 停止服务
+sudo systemctl stop tranquil-inbox-ward
+
+# 重启服务
+sudo systemctl restart tranquil-inbox-ward
+
+# 查看日志
+sudo journalctl -u tranquil-inbox-ward -f
+```
+
+### 5. 服务文件说明
+- **服务文件**: `/etc/systemd/system/tranquil-inbox-ward.service`
+- **安装目录**: 当前克隆的目录
+- **虚拟环境**: `Tranquil-Inbox-Ward/`（项目根目录下）
+- **日志目录**: `/var/log/tranquil-inbox-ward/`
+
+### 6. 注意事项
+1. 部署脚本会在当前目录创建Python虚拟环境
+2. 服务使用当前用户运行，无需创建专用系统用户
+3. 确保Ollama服务已启动：`systemctl status ollama`
+4. 如需修改服务配置，编辑服务文件后运行：`sudo systemctl daemon-reload && sudo systemctl restart tranquil-inbox-ward`
+
 ## 其它
 - 源代码主文件：`app.py`  
-- 如需额外的容器化或 systemd 部署示例，可在仓库中补充 `Dockerfile` 或 service 单元文件。
-- =-= So，欢迎PR 
-
+- 如需额外的容器化部署示例，可在仓库中补充 `Dockerfile`
+- 已提供systemd部署脚本和模板文件
+- =-= So，欢迎PR
