@@ -88,6 +88,58 @@ sudo journalctl -u tranquil-inbox-ward -f
 3. 确保Ollama服务已启动：`systemctl status ollama`
 4. 如需修改服务配置，编辑服务文件后运行：`sudo systemctl daemon-reload && sudo systemctl restart tranquil-inbox-ward`
 
+## API 测试
+
+项目提供了 `api_test.sh` 脚本，用于方便地测试API。
+
+### 脚本功能
+- 测试单个文本内容
+- 从文件批量测试多行文本
+- 交互式测试模式
+- 彩色输出和 JSON 格式化（如果安装了 `jq`）
+
+### 使用方法
+
+#### 1. 测试单个文本
+```bash
+./api_test.sh "这是一条测试消息"
+```
+
+#### 2. 从文件批量测试
+```bash
+./api_test.sh -f test_cases.txt
+```
+
+#### 3. 交互模式
+```bash
+./api_test.sh -i
+```
+
+#### 4. 显示帮助
+```bash
+./api_test.sh -h
+```
+
+### 依赖要求
+- `curl`: 用于发送 HTTP 请求
+- `jq` (可选): 用于格式化 JSON 输出，如果未安装则输出原始 JSON
+
+### 示例输出
+```bash
+$ ./api_test.sh "今天天气真好"
+测试内容: 今天天气真好
+API URL: http://localhost:8501/v1/models/emotion_model:predict
+----------------------------------------
+{
+  "predictions": [
+    {
+      "label": "positive",
+      "score": 0.95
+    }
+  ]
+}
+```
+
 ## 其它
 - 源代码主文件：`app.py`  
 - 如需额外的容器化部署示例，可在仓库中补充 `Dockerfile`
