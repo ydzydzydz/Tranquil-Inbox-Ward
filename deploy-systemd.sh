@@ -27,10 +27,10 @@ echo "   安装目录: $INSTALL_DIR"
 echo "   项目名称: $APP_NAME"
 
 echo "2. 创建日志目录及日志文件"
-mkdir -p "$LOG_DIR"
-touch "$LOG_DIR/access.log"
-touch "$LOG_DIR/error.log"
-chmod -R 755 "$LOG_DIR"
+sudo mkdir -p "$LOG_DIR"
+sudo touch "$LOG_DIR/access.log"
+sudo touch "$LOG_DIR/error.log"
+sudo chmod -R 755 "$LOG_DIR"
 
 echo "3. 设置Python虚拟环境..."
 if [ ! -d "$VENV_NAME" ]; then
