@@ -30,6 +30,8 @@ echo "2. 创建日志目录及日志文件"
 sudo mkdir -p "$LOG_DIR"
 sudo touch "$LOG_DIR/access.log"
 sudo touch "$LOG_DIR/error.log"
+sudo chown -R ${SUDO_USER}:${SUDO_USER} /var/log/tranquil-inbox-ward
+
 sudo chmod -R 755 "$LOG_DIR"
 
 echo "3. 设置Python虚拟环境..."
