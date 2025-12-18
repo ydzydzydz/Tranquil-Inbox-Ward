@@ -21,9 +21,7 @@ logging.basicConfig(
 logger = logging.getLogger("email_classifier")
 
 # 配置
-OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', "rwkv-7-g1b:1.5b")
-#OLLAMA_API_URL = os.getenv('OLLAMA_API_URL', "http://rwkv.linuxuser.site/api/generate")
-# 使用本地部署的Ollama服务器
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', "mollysama/rwkv-7-g1:1.5b")
 OLLAMA_API_URL = os.getenv('OLLAMA_API_URL', "http://127.0.0.1:11434/api/generate")
 SERVER_HOST = os.getenv('SERVER_HOST', "0.0.0.0")
 SERVER_PORT = int(os.getenv('SERVER_PORT', "8501"))
@@ -147,7 +145,7 @@ class EmailClassifier:
             with urllib_request.urlopen(req, timeout=30) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 response_text = result.get("response", "").strip()
-                
+                print(f"LLM响应: {response_text}")
                 # 解析响应
                 if "1" in response_text:
                     return (0.8, 0.1, 0.1)
@@ -214,18 +212,33 @@ classifier = EmailClassifier()
 def health_check():
     """健康检查"""
     try:
-        test_payload = {
-            "model": OLLAMA_MODEL,
-            "prompt": "test",
-            "stream": False
-        }
-        req = urllib_request.Request(
-            OLLAMA_API_URL,
-            data=json.dumps(test_payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"}
-        )
-        with urllib_request.urlopen(req, timeout=5):
-            return jsonify({'status': 'healthy', 'ollama': 'connected'})
+        # 首先检查Ollama服务是否可达
+        tags_url = OLLAMA_API_URL.replace('/api/generate', '/api/tags')
+        req = urllib_request.Request(tags_url)
+        with urllib_request.urlopen(req, timeout=5) as response:
+            tags_data = json.loads(response.read().decode("utf-8"))
+            models = tags_data.get('models', [])
+            model_names = [m.get('name', '') for m in models]
+            
+            # 检查所需模型是否可用
+            model_available = OLLAMA_MODEL in model_names
+            
+            if model_available:
+                return jsonify({
+                    'status': 'healthy', 
+                    'ollama': 'connected',
+                    'model_available': True,
+                    'available_models': model_names
+                })
+            else:
+                return jsonify({
+                    'status': 'degraded',
+                    'ollama': 'connected',
+                    'model_available': False,
+                    'required_model': OLLAMA_MODEL,
+                    'available_models': model_names,
+                    'warning': f'Required model {OLLAMA_MODEL} not found in available models'
+                })
     except Exception as e:
         logger.error(f"健康检查失败: {str(e)}")
         return jsonify({
