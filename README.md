@@ -1,6 +1,8 @@
 # Tranquil-Inbox-Ward
 
 静域信驿（Tranquil Inbox Ward），专为 pmail 设计的关键词增强型垃圾邮件分类服务（规则 + LLM 混合）。
+过滤效果图：
+<img width="1917" height="875" alt="image" src="https://github.com/user-attachments/assets/ffed6475-cc85-426c-9eb4-8f5fa52c9310" />
 
 ## 仓库
 https://github.com/AXFOX/Tranquil-Inbox-Ward
