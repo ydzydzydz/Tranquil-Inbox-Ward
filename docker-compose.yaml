@@ -9,7 +9,13 @@ services:
     networks:
       - pmail
     restart: always
-    # 开启GPU支持
+    # 开启 vulkan
+    environment:
+      - OLLAMA_VULKAN=1
+    devices:
+      - /dev/dri:/dev/dri
+      # - /dev/kfd:/dev/kfd # AMD 独显
+    # 开启 GPU 支持
     # deploy:
     #   resources:
     #     reservations:
