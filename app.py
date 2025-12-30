@@ -1,12 +1,10 @@
 from flask import Flask, request, jsonify
 import json
 import urllib.request as urllib_request
-import urllib.error as urllib_error
 import os
 import logging
 import re
-from typing import Tuple, List, Dict, Any
-from collections import Counter
+from typing import Tuple
 from dotenv import load_dotenv
 
 # 加载环境变量
@@ -21,12 +19,14 @@ logging.basicConfig(
 logger = logging.getLogger("email_classifier")
 
 # 配置
-OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', "mollysama/rwkv-7-g1:1.5b")
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', "mollysama/rwkv-7-g1b:1.5b")
 OLLAMA_API_URL = os.getenv('OLLAMA_API_URL', "http://127.0.0.1:11434/api/generate")
 SERVER_HOST = os.getenv('SERVER_HOST', "0.0.0.0")
 SERVER_PORT = int(os.getenv('SERVER_PORT', "8501"))
+SERVER_TIMEOUT = int(os.getenv('SERVER_TIMEOUT', "60"))
 
 app = Flask(__name__)
+
 
 class EmailClassifier:
     """基于规则和LLM的混合邮件分类器"""
@@ -142,7 +142,7 @@ class EmailClassifier:
                 data=json.dumps(payload).encode("utf-8"),
                 headers={"Content-Type": "application/json"}
             )
-            with urllib_request.urlopen(req, timeout=30) as response:
+            with urllib_request.urlopen(req, timeout=SERVER_TIMEOUT) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 response_text = result.get("response", "").strip()
                 print(f"LLM响应: {response_text}")
@@ -215,7 +215,7 @@ def health_check():
         # 首先检查Ollama服务是否可达
         tags_url = OLLAMA_API_URL.replace('/api/generate', '/api/tags')
         req = urllib_request.Request(tags_url)
-        with urllib_request.urlopen(req, timeout=5) as response:
+        with urllib_request.urlopen(req, timeout=SERVER_TIMEOUT) as response:
             tags_data = json.loads(response.read().decode("utf-8"))
             models = tags_data.get('models', [])
             model_names = [m.get('name', '') for m in models]

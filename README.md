@@ -90,6 +90,28 @@ sudo journalctl -u tranquil-inbox-ward -f
 3. 确保Ollama服务已启动：`systemctl status ollama`
 4. 如需修改服务配置，编辑服务文件后运行：`sudo systemctl daemon-reload && sudo systemctl restart tranquil-inbox-ward`
 
+## docker-compose 部署
+
+```bash
+# 克隆仓库
+git clone https://github.com/ydzydzydz/Tranquil-Inbox-Ward.git && cd Tranquil-Inbox-Ward
+# 编辑 compose 文件
+vim docker-compose.yaml
+# 启动服务
+docker-compose up -d
+# 查看日志
+docker-compose logs -f --tail 10
+
+# 拉取模型，第一次启动需要
+docker-compose exec ollama ollama pull mollysama/rwkv-7-g1b:1.5b
+# 查看模型列表
+docker-compose exec ollama ollama list
+# 启动模型，每次启动都需要
+docker-compose exec ollama ollama run mollysama/rwkv-7-g1b:1.5b
+# 查看已启动模型列表，每次启动都需要，确保模型已启动，才能正常调用 API
+docker-compose exec ollama ollama ps
+```
+
 ## API 测试
 项目提供了 `api_test.sh` 脚本，用于方便地测试API。
 用法: 

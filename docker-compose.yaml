@@ -1,0 +1,44 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - pmail
+    restart: always
+    # 开启GPU支持
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all  # 所有GPU
+    #           capabilities: [gpu]
+
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_API_URL=http://ollama:11434/api/generate
+      - OLLAMA_MODEL=mollysama/rwkv-7-g1b:1.5b
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8501
+      - SERVER_TIMEOUT=60
+    depends_on:
+      ollama:
+        condition: service_started
+    networks:
+      - pmail
+    restart: always
+
+volumes:
+  ollama_data:
+
+networks:
+  pmail:
+    driver: bridge
+    name: pmail
+    external: true
