@@ -92,6 +92,8 @@ sudo journalctl -u tranquil-inbox-ward -f
 
 ## docker-compose 部署
 
+### 启动服务
+
 ```bash
 # 克隆仓库
 git clone https://github.com/ydzydzydz/Tranquil-Inbox-Ward.git && cd Tranquil-Inbox-Ward
@@ -99,9 +101,15 @@ git clone https://github.com/ydzydzydz/Tranquil-Inbox-Ward.git && cd Tranquil-In
 vim docker-compose.yaml
 # 启动服务
 docker-compose up -d
+# 查看启动状态
+docker-compose ps -a
 # 查看日志
 docker-compose logs -f --tail 10
+```
 
+### 启动模型
+
+```bash
 # 拉取模型，第一次启动需要
 docker-compose exec ollama ollama pull mollysama/rwkv-7-g1b:1.5b
 # 查看模型列表
@@ -110,6 +118,19 @@ docker-compose exec ollama ollama list
 docker-compose exec ollama ollama run mollysama/rwkv-7-g1b:1.5b
 # 查看已启动模型列表，每次启动都需要，确保模型已启动，才能正常调用 API
 docker-compose exec ollama ollama ps
+```
+
+### pmail 设置
+
+```bash
+# 查看网络列表
+docker network ls
+# 查看网络详情
+docker network inspect pmail
+# 测试容器连通性
+docker exec -it pmail ping -c 4 tranquil-inbox-ward-app
+# 登录 WEB 设置，确保与 pmail 容器处于同一桥接网络
+http://tranquil-inbox-ward-app:8501/v1/models/emotion_model:predict
 ```
 
 ## API 测试
